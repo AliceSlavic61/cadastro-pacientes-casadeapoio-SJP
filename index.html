@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro de Pacientes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e3f2fd; /* azul claro */
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .form-container {
+      background-color: #fffde7; /* amarelo claro */
+      padding: 25px 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+    h1 {
+      text-align: center;
+      color: #1976d2; /* azul escuro */
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #1976d2;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ffccd2; /* vermelho claro */
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    input:invalid {
+      border-color: #d32f2f;
+      background-color: #ffebee;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #ffccd2; /* vermelho claro */
+      color: #1976d2;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background-color: #ef9a9a;
+    }
+    #mensagem {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    #mensagem.error {
+      color: #d32f2f;
+    }
+    #mensagem.success {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>Cadastro de Pacientes</h1>
+    <form id="cadastroForm" novalidate>
+      <label for="nome">Nome completo *</label>
+      <input type="text" id="nome" name="nome" required />
+
+      <label for="cpf">CPF *</label>
+      <input type="text" id="cpf" name="cpf" pattern="\d{11}" title="Digite 11 dígitos numéricos (ex: 12345678901)" required />
+
+      <label for="localidade">Localidade *</label>
+      <input type="text" id="localidade" name="localidade" required />
+
+      <label for="acompanhante">Nome do acompanhante *</label>
+      <input type="text" id="acompanhante" name="acompanhante" required />
+
+      <label for="telefone">Telefone *</label>
+      <input type="tel" id="telefone" name="telefone" 
+        pattern="^\(\d{2}\)\s?\d{4,5}-\d{4}$" 
+        title="Formato: (35) 99999-9999 ou (35) 9999-9999 (com ou sem espaço após o código)" 
+        required
+      />
+
+      <button type="submit">Cadastrar</button>
+    </form>
+    <div id="mensagem"></div>
+  </div>
+
+<script>
+  document.getElementById('cadastroForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const dados = {
+        nome: document.getElementById('nome').value,
+        cpf: document.getElementById('cpf').value,
+        localidade: document.getElementById('localidade').value,
+        acompanhante: document.getElementById('acompanhante').value,
+        telefone: document.getElementById('telefone').value
+    };
+    
+    // Envia para o Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbw0NKZBFG+q5KNEkVXDByeyC73TLdYS5PpNRr9W.JNicmQYhoSLHakKyhcOj', {  // Substitua pela URL copiada
+        method: 'POST',
+        body: JSON.stringify(dados),
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('mensagem').innerHTML = '<p>Cadastro enviado com sucesso!</p>';
+            this.reset();
+        } else {
+            document.getElementById('mensagem').innerHTML = '<p class="error">Erro: ' + data.error + '</p>';
+        }
+    })
+    .catch(error => {
+        document.getElementById('mensagem').innerHTML = '<p class="error">Erro de conexão.</p>';
+    });
+});
+
+</script>
+</body>
+</html>
